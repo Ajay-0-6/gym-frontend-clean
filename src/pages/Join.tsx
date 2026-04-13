@@ -23,7 +23,7 @@ export default function Join() {
     e.preventDefault();
 
     try {
-      const res = await fetch('http://localhost:5000/api/join', {
+      const res = await fetch('https://gym-backend-q7co.onrender.com/api/join', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

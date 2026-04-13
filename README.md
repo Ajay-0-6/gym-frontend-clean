@@ -1,20 +1,20 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Gym Website 💪
 
-# Run and deploy your AI Studio app
+Modern gym website built with React, Node.js, Express, and MongoDB.
 
-This contains everything you need to run your app locally.
+## Features
+- Responsive modern UI
+- Membership join form
+- Backend API
+- MongoDB data storage
+- Clean landing pages
 
-View your app in AI Studio: https://ai.studio/apps/f8c1200e-120c-458e-ab64-64c31c4904b5
+## Tech Stack
+- React + Vite
+- Tailwind CSS
+- Node.js
+- Express.js
+- MongoDB Atlas
 
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Author
+Ajay Shanmugamgit push -u origin main --force
