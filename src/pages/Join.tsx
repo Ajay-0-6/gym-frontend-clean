@@ -1,55 +1,66 @@
-import { motion } from 'motion/react';
-import { useSearchParams } from 'react-router-dom';
-import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import React from 'react';
+import { motion } from "motion/react";
+import { useSearchParams } from "react-router-dom";
+import { useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import React from "react";
 
 export default function Join() {
   const [searchParams] = useSearchParams();
-  const initialPlan = searchParams.get('plan') || 'standard';
+  const initialPlan = searchParams.get("plan") || "standard";
 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
+  const initialForm = {
+    name: "",
+    email: "",
+    phone: "",
     plan: initialPlan,
-    goal: 'muscle-gain',
-  });
+    goal: "muscle-gain",
+  };
 
+  const [formData, setFormData] = useState(initialForm);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+
+    const payload = {
+      ...formData,
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
+    };
 
     try {
-      const res = await fetch('https://gym-backend-q7co.onrender.com/api/join', {
-        method: 'POST',
+      const res = await fetch("https://gym-backend-vfvr.onrender.com/api/join", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = {};
+      }
+
+      console.log("Response:", data);
 
       if (res.ok) {
-        console.log(data);
         setSubmitted(true);
-
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          plan: 'standard',
-          goal: 'muscle-gain',
-        });
+        setFormData(initialForm);
       } else {
-        alert('Submission failed');
+        alert(data.message || "Submission failed");
       }
     } catch (error) {
-      console.error(error);
-      alert('Server error');
+      console.error("Submit Error:", error);
+      alert("Server error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,8 +77,8 @@ export default function Join() {
           </h2>
 
           <p className="text-white/60 mb-10 leading-relaxed">
-            Your application has been received. One of our master trainers will
-            contact you within 24 hours to schedule your initial assessment.
+            Your application has been received. One of our trainers will contact
+            you within 24 hours.
           </p>
 
           <button
@@ -85,63 +96,18 @@ export default function Join() {
     <div className="pt-32 pb-20">
       <section className="py-20 bg-dark">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-20">
-          {/* Left Content */}
+          {/* Left */}
           <div>
             <h1 className="text-5xl md:text-8xl font-display font-bold uppercase mb-8 leading-none">
               Join the <br /> <span className="text-brand">Structure</span>
             </h1>
 
             <p className="text-white/50 text-xl font-light leading-relaxed mb-12">
-              Take the first step towards your transformation. Fill out the form
-              and we'll build your path to success.
+              Take the first step towards your transformation.
             </p>
-
-            <div className="space-y-12">
-              <div className="flex gap-6">
-                <div className="w-12 h-12 border border-brand flex items-center justify-center shrink-0 text-brand font-bold">
-                  01
-                </div>
-                <div>
-                  <h4 className="font-bold uppercase tracking-widest text-xs mb-2">
-                    Initial Assessment
-                  </h4>
-                  <p className="text-white/40 text-sm">
-                    We analyze your current fitness level and goals.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-6">
-                <div className="w-12 h-12 border border-brand flex items-center justify-center shrink-0 text-brand font-bold">
-                  02
-                </div>
-                <div>
-                  <h4 className="font-bold uppercase tracking-widest text-xs mb-2">
-                    Plan Selection
-                  </h4>
-                  <p className="text-white/40 text-sm">
-                    Choose the membership that fits your lifestyle.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-6">
-                <div className="w-12 h-12 border border-brand flex items-center justify-center shrink-0 text-brand font-bold">
-                  03
-                </div>
-                <div>
-                  <h4 className="font-bold uppercase tracking-widest text-xs mb-2">
-                    Begin Training
-                  </h4>
-                  <p className="text-white/40 text-sm">
-                    Start your journey with expert guidance.
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
 
-          {/* Form */}
+          {/* Right Form */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -149,136 +115,93 @@ export default function Join() {
           >
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-white/40">
-                    Full Name
-                  </label>
+                <input
+                  required
+                  type="text"
+                  placeholder="Full Name"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  className="w-full bg-dark border border-white/10 px-4 py-4 text-white outline-none"
+                />
 
-                  <input
-                    required
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    className="w-full bg-dark border border-white/10 px-4 py-4 text-white focus:border-brand outline-none transition-colors"
-                    placeholder="John Doe"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-white/40">
-                    Email Address
-                  </label>
-
-                  <input
-                    required
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    className="w-full bg-dark border border-white/10 px-4 py-4 text-white focus:border-brand outline-none transition-colors"
-                    placeholder="john@example.com"
-                  />
-                </div>
+                <input
+                  required
+                  type="email"
+                  placeholder="Email Address"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  className="w-full bg-dark border border-white/10 px-4 py-4 text-white outline-none"
+                />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-white/40">
-                    Phone Number
-                  </label>
-
-                  <input
-                    required
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) =>
-                      setFormData({ ...formData, phone: e.target.value })
-                    }
-                    className="w-full bg-dark border border-white/10 px-4 py-4 text-white focus:border-brand outline-none transition-colors"
-                    placeholder="+1 (555) 000-0000"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-white/40">
-                    Select Plan
-                  </label>
-
-                  <div className="relative">
-                    <select
-                      value={formData.plan}
-                      onChange={(e) => {
-                        setFormData({ ...formData, plan: e.target.value });
-                        e.target.blur();
-                      }}
-                      onFocus={() => setActiveDropdown('plan')}
-                      onBlur={() => setActiveDropdown(null)}
-                      className="w-full bg-dark border border-white/10 px-4 py-4 text-white focus:border-brand outline-none transition-colors appearance-none pr-10"
-                    >
-                      <option value="basic">Basic Plan</option>
-                      <option value="standard">Standard Plan</option>
-                      <option value="premium">Premium Plan</option>
-                    </select>
-
-                    {activeDropdown === 'plan' ? (
-                      <ChevronUp
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-brand pointer-events-none"
-                        size={16}
-                      />
-                    ) : (
-                      <ChevronDown
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none"
-                        size={16}
-                      />
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-white/40">
-                  Primary Goal
-                </label>
+                <input
+                  required
+                  type="tel"
+                  placeholder="Phone Number"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                  className="w-full bg-dark border border-white/10 px-4 py-4 text-white outline-none"
+                />
 
                 <div className="relative">
                   <select
-                    value={formData.goal}
-                    onChange={(e) => {
-                      setFormData({ ...formData, goal: e.target.value });
-                      e.target.blur();
-                    }}
-                    onFocus={() => setActiveDropdown('goal')}
+                    value={formData.plan}
+                    onChange={(e) =>
+                      setFormData({ ...formData, plan: e.target.value })
+                    }
+                    onFocus={() => setActiveDropdown("plan")}
                     onBlur={() => setActiveDropdown(null)}
-                    className="w-full bg-dark border border-white/10 px-4 py-4 text-white focus:border-brand outline-none transition-colors appearance-none pr-10"
+                    className="w-full bg-dark border border-white/10 px-4 py-4 text-white appearance-none outline-none"
                   >
-                    <option value="muscle-gain">Muscle Gain</option>
-                    <option value="weight-loss">Weight Loss</option>
-                    <option value="endurance">Endurance</option>
-                    <option value="flexibility">Flexibility & Recovery</option>
+                    <option value="basic">Basic Plan</option>
+                    <option value="standard">Standard Plan</option>
+                    <option value="premium">Premium Plan</option>
                   </select>
 
-                  {activeDropdown === 'goal' ? (
-                    <ChevronUp
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-brand pointer-events-none"
-                      size={16}
-                    />
+                  {activeDropdown === "plan" ? (
+                    <ChevronUp className="absolute right-4 top-1/2 -translate-y-1/2 text-brand" size={16} />
                   ) : (
-                    <ChevronDown
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none"
-                      size={16}
-                    />
+                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40" size={16} />
                   )}
                 </div>
               </div>
 
+              <div className="relative">
+                <select
+                  value={formData.goal}
+                  onChange={(e) =>
+                    setFormData({ ...formData, goal: e.target.value })
+                  }
+                  onFocus={() => setActiveDropdown("goal")}
+                  onBlur={() => setActiveDropdown(null)}
+                  className="w-full bg-dark border border-white/10 px-4 py-4 text-white appearance-none outline-none"
+                >
+                  <option value="muscle-gain">Muscle Gain</option>
+                  <option value="weight-loss">Weight Loss</option>
+                  <option value="endurance">Endurance</option>
+                  <option value="flexibility">Flexibility & Recovery</option>
+                </select>
+
+                {activeDropdown === "goal" ? (
+                  <ChevronUp className="absolute right-4 top-1/2 -translate-y-1/2 text-brand" size={16} />
+                ) : (
+                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40" size={16} />
+                )}
+              </div>
+
               <button
                 type="submit"
-                className="w-full py-5 bg-brand text-white font-bold uppercase tracking-widest hover:bg-brand/90 transition-all"
+                disabled={loading}
+                className="w-full py-5 bg-brand text-white font-bold uppercase tracking-widest hover:bg-brand/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Submit Application
+                {loading ? "Submitting..." : "Submit Application"}
               </button>
             </form>
           </motion.div>
