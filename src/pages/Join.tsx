@@ -8,15 +8,14 @@ export default function Join() {
   const [searchParams] = useSearchParams();
   const initialPlan = searchParams.get("plan") || "standard";
 
-  const initialForm = {
+  const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     plan: initialPlan,
     goal: "muscle-gain",
-  };
+  });
 
-  const [formData, setFormData] = useState(initialForm);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -25,39 +24,31 @@ export default function Join() {
     e.preventDefault();
     setLoading(true);
 
-    const payload = {
-      ...formData,
-      name: formData.name.trim(),
-      email: formData.email.trim(),
-      phone: formData.phone.trim(),
-    };
-
     try {
       const res = await fetch("https://gym-backend-vfvr.onrender.com/api/join", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(formData),
       });
 
-      let data: any = {};
-      try {
-        data = await res.json();
-      } catch {
-        data = {};
-      }
-
-      console.log("Response:", data);
+      const data = await res.json();
 
       if (res.ok) {
         setSubmitted(true);
-        setFormData(initialForm);
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          plan: "standard",
+          goal: "muscle-gain",
+        });
       } else {
         alert(data.message || "Submission failed");
       }
     } catch (error) {
-      console.error("Submit Error:", error);
+      console.error(error);
       alert("Server error");
     } finally {
       setLoading(false);
@@ -94,20 +85,67 @@ export default function Join() {
 
   return (
     <div className="pt-32 pb-20">
+      {/* Main Join Section */}
       <section className="py-20 bg-dark">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-20">
-          {/* Left */}
+          {/* Left Side */}
           <div>
             <h1 className="text-5xl md:text-8xl font-display font-bold uppercase mb-8 leading-none">
               Join the <br /> <span className="text-brand">Structure</span>
             </h1>
 
             <p className="text-white/50 text-xl font-light leading-relaxed mb-12">
-              Take the first step towards your transformation.
+              Take the first step towards your transformation. Fill out the form
+              and we'll build your path to success.
             </p>
+
+            {/* 3 Steps */}
+            <div className="space-y-12">
+              <div className="flex gap-6">
+                <div className="w-12 h-12 border border-brand flex items-center justify-center text-brand font-bold">
+                  01
+                </div>
+                <div>
+                  <h4 className="font-bold uppercase tracking-widest text-xs mb-2">
+                    Initial Assessment
+                  </h4>
+                  <p className="text-white/40 text-sm">
+                    We analyze your current fitness level and goals.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-6">
+                <div className="w-12 h-12 border border-brand flex items-center justify-center text-brand font-bold">
+                  02
+                </div>
+                <div>
+                  <h4 className="font-bold uppercase tracking-widest text-xs mb-2">
+                    Plan Selection
+                  </h4>
+                  <p className="text-white/40 text-sm">
+                    Choose the membership that fits your lifestyle.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-6">
+                <div className="w-12 h-12 border border-brand flex items-center justify-center text-brand font-bold">
+                  03
+                </div>
+                <div>
+                  <h4 className="font-bold uppercase tracking-widest text-xs mb-2">
+                    Begin Training
+                  </h4>
+                  <p className="text-white/40 text-sm">
+                    Start your journey with expert guidance.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Right Form */}
+          {/* Form */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -123,7 +161,7 @@ export default function Join() {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="w-full bg-dark border border-white/10 px-4 py-4 text-white outline-none"
+                  className="w-full bg-dark border border-white/10 px-4 py-4 text-white"
                 />
 
                 <input
@@ -134,7 +172,7 @@ export default function Join() {
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
-                  className="w-full bg-dark border border-white/10 px-4 py-4 text-white outline-none"
+                  className="w-full bg-dark border border-white/10 px-4 py-4 text-white"
                 />
               </div>
 
@@ -147,7 +185,7 @@ export default function Join() {
                   onChange={(e) =>
                     setFormData({ ...formData, phone: e.target.value })
                   }
-                  className="w-full bg-dark border border-white/10 px-4 py-4 text-white outline-none"
+                  className="w-full bg-dark border border-white/10 px-4 py-4 text-white"
                 />
 
                 <div className="relative">
@@ -158,7 +196,7 @@ export default function Join() {
                     }
                     onFocus={() => setActiveDropdown("plan")}
                     onBlur={() => setActiveDropdown(null)}
-                    className="w-full bg-dark border border-white/10 px-4 py-4 text-white appearance-none outline-none"
+                    className="w-full bg-dark border border-white/10 px-4 py-4 text-white appearance-none"
                   >
                     <option value="basic">Basic Plan</option>
                     <option value="standard">Standard Plan</option>
@@ -181,7 +219,7 @@ export default function Join() {
                   }
                   onFocus={() => setActiveDropdown("goal")}
                   onBlur={() => setActiveDropdown(null)}
-                  className="w-full bg-dark border border-white/10 px-4 py-4 text-white appearance-none outline-none"
+                  className="w-full bg-dark border border-white/10 px-4 py-4 text-white appearance-none"
                 >
                   <option value="muscle-gain">Muscle Gain</option>
                   <option value="weight-loss">Weight Loss</option>
@@ -199,12 +237,44 @@ export default function Join() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-5 bg-brand text-white font-bold uppercase tracking-widest hover:bg-brand/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-5 bg-brand text-white font-bold uppercase tracking-widest hover:bg-brand/90 transition-all disabled:opacity-50"
               >
                 {loading ? "Submitting..." : "Submit Application"}
               </button>
             </form>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Missing Location Section Added */}
+      <section className="py-20 bg-surface border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <p className="text-brand uppercase tracking-widest text-sm mb-3">
+              Our Location
+            </p>
+            <h2 className="text-4xl md:text-6xl font-display font-bold uppercase">
+              Find the Structure
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div className="p-8 border border-white/10 bg-dark">
+              <h3 className="text-2xl font-bold mb-4">Main Facility</h3>
+              <p className="text-white/60 leading-relaxed mb-4">
+                123 Elite Plaza, Fitness District <br />
+                New York, NY 10001
+              </p>
+              <p className="text-white/50">Phone: +1 (555) 123-4567</p>
+              <p className="text-white/50">Email: contact@ironstructure.com</p>
+            </div>
+
+            <div className="border border-white/10 overflow-hidden min-h-[300px] bg-dark flex items-center justify-center">
+              <p className="text-white/50 uppercase tracking-widest">
+                Map / Location Preview
+              </p>
+            </div>
+          </div>
         </div>
       </section>
     </div>
