@@ -282,7 +282,7 @@ export default function Join() {
             {/* Card 1 */}
             <div className="border border-white/10 bg-dark overflow-hidden">
               <img
-                src="https://unsplash.com/photos/gym-equipment-inside-room-20jX9b35r_M"
+                src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?q=80&w=1375&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 alt="Gym"
                 className="w-full h-40 object-cover grayscale hover:grayscale-0 transition-all duration-500"
               />
@@ -316,7 +316,7 @@ export default function Join() {
             {/* Card 2 */}
             <div className="relative border border-white/10 overflow-hidden h-full min-h-[360px]">
               <img
-                src="https://unsplash.com/photos/road-map-6MsMKWzJWKc"
+                src="https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 alt="Map"
                 className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
               />
